@@ -16,15 +16,23 @@ const aaa = withProps({
 })
 
 const track = (props, onData) => {
-  Meteor.call('test', (err, list) => onData(null, { list }))
+  Meteor.call('test', (err, list) => err
+    ? onData(err)
+    : onData(null, { list })
+  )
 }
 
 const test1 = compose(
   aaa,
   withTracker(track),
 )(({ loading, list }) => {
-  if (loading)
+  console.log(loading)
+
+  if (loading && typeof loading === 'boolean')
     return <div>loading</div>
+
+  if (loading && typeof loading !== 'boolean')
+    return <div>{JSON.stringify(loading)}</div>
 
   return <div>
     {list && list.map((item, itemIdx) => <div key={itemIdx}>{item}</div>)}

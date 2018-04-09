@@ -13,7 +13,7 @@ recompose.withTracker = track => compose(
       this.trackerHandler = Tracker.nonreactive(() => Tracker.autorun(() => {
         track(this.props, (err, nextProps) => {
           if (err) {
-
+            this.props.setLoading(err)
           } else {
             this.setState(nextProps, () => {
               this.props.setLoading(false)
