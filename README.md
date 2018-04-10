@@ -1,1 +1,1 @@
-# rekomposer
+# meteor-rekomposer
