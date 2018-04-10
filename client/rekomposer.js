@@ -9,23 +9,36 @@ const {
   renderComponent,
 } = recompact
 
-const LoadingComponent = () => <div>loading</div>
-const ErrorComponent = () => <div>error</div>
+const loadingHandler = () => <div>loading</div>
+const errorHandler = () => <div>error</div>
+
+let _defaults = {
+  loadingHandler,
+  errorHandler,
+  env: {},
+}
+
+export const setDefaults = defaults => Object.assign({}, _defaults, defaults)
 
 const initialState = withState('_withTrackerState', '_setWithTrackerState', { state: false })
 
 const trackReactiveSource = (tracker, options) => lifecycle({
   componentDidMount() {
-    this.trackerHandler = Tracker.nonreactive(() => Tracker.autorun(() => {
-      tracker(this.props, (err, nextProps) => err
-        ? this.props._setWithTrackerState({ state: err })
-        : this.setState(nextProps, () => this.props._setWithTrackerState({ state: true }))
-      )
+    const _onData = (err, nextProps) => err
+      ? this.props._setWithTrackerState({ state: err })
+      : this.setState(nextProps, () => this.props._setWithTrackerState({ state: true }))
+
+    this.handler = Tracker.nonreactive(() => Tracker.autorun(() => {
+      this.trackerHandler = tracker(this.props, _onData, { ..._defaults.env })
     }))
   },
 
   componentWillUnmount() {
-    this.trackerHandler && trackerHandler.stop()
+    const { trackerHandler, handler } = this
+    if (typeof trackerHandler === 'function' && trackerHandler.name !== '_onData')
+      trackerHandler()
+
+    handler && handler.stop()
   },
 })
 
@@ -33,9 +46,9 @@ const checkState = ({ _withTrackerState: { state } }) => typeof state === 'boole
 
 const StateComponent = options => ({ _withTrackerState: { state }, ...props }) => {
   if (typeof state === 'boolean')
-    return options.loadingHandler && options.loadingHandler(props) || LoadingComponent()
+    return options.loadingHandler && options.loadingHandler(props) || _defaults.loadingHandler()
 
-  return options.errorHandler ? options.errorHandler(state, props) : ErrorComponent()
+  return options.errorHandler ? options.errorHandler(state, props) : _defaults.errorHandler()
 }
 
 const branchTrackerState = options => branch(checkState, renderComponent(StateComponent(options)))

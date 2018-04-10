@@ -18,12 +18,15 @@ const aaa = withProps({
   haha: true
 })
 
-const track = (props, onData) => {
+const track = (props, onData, env) => {
+  console.log(env)
   TestRerun.get()
   Meteor.call('test', (err, list) => err
     ? onData(err)
     : onData(null, { list })
   )
+
+  return () => console.log(1)
 }
 
 const test1 = compose(
