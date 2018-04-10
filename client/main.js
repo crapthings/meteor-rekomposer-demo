@@ -2,7 +2,7 @@ import _ from 'lodash'
 import faker from 'faker'
 import React, { Component } from 'react'
 import { render } from 'react-dom'
-import recompact from './rekomposer'
+import recompact from '../'
 
 const {
   compose,
@@ -26,6 +26,7 @@ const track1 = (props, onData, env) => {
     : onData(null, { list1 })
   )
 
+  console.log('track1')
   return () => console.log(1)
 }
 
@@ -37,17 +38,24 @@ const track2 = (props, onData, env) => {
   )
 
   console.log('track2')
-  return () => console.log(1)
+  return () => console.log(2)
 }
 
 const test1 = compose(
   withTracker(track1),
   aaa,
   withTracker(track2),
-)(({ loading, list }) => {
-  return <div>
-    {list.map((item, itemIdx) => <div key={itemIdx}>{item}</div>)}
-  </div>
+)(({ loading, list, list1 }) => {
+  return <>
+    <h1>list 1</h1>
+    <div ref='okay'>
+      {list.map((item, itemIdx) => <div key={itemIdx}>{item}</div>)}
+    </div>
+    <h1>list 2</h1>
+    <div>
+      {list1.map((item, itemIdx) => <div key={itemIdx}>{item}</div>)}
+    </div>
+  </>
 })
 
 const test2 = composeWithTracker(track1)(({ loading, list }) => {
