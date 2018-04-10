@@ -1,4 +1,6 @@
 import React from 'react'
+import shallowCompare from 'react-addons-shallow-compare'
+import { isEqual } from 'lodash'
 import recompact from 'recompact'
 
 const {
@@ -9,27 +11,42 @@ const {
   renderComponent,
 } = recompact
 
+const WITH_STATE_PROPS = ['_withTrackerState', '_setWithTrackerState']
+
 const loadingHandler = () => <div>loading</div>
 const errorHandler = () => <div>error</div>
 
 let _defaults = {
   loadingHandler,
   errorHandler,
+  pure: false,
   env: {},
 }
 
 export const setDefaults = defaults => Object.assign({}, _defaults, defaults)
 
-const initialState = withState('_withTrackerState', '_setWithTrackerState', { state: false })
+const initialState = withState(WITH_STATE_PROPS[0], WITH_STATE_PROPS[1], false)
 
 const trackReactiveSource = (tracker, options) => lifecycle({
+  componentWillMount() {
+  },
+
+  componentWillReceiveProps(nextProps) {
+    if (isEqual(_.omit(this.props, WITH_STATE_PROPS), _.omit(nextProps, WITH_STATE_PROPS))) return
+    this.trackerHandler = tracker(this.props, this._onData, { ..._defaults.env })
+  },
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return true
+  },
+
   componentDidMount() {
-    const _onData = (err, nextProps) => err
-      ? this.props._setWithTrackerState({ state: err })
-      : this.setState(nextProps, () => this.props._setWithTrackerState({ state: true }))
+    this._onData = (err, nextProps) => err
+      ? this.props._setWithTrackerState(err)
+      : this.setState(nextProps, () => this.props._setWithTrackerState(true))
 
     this.handler = Tracker.nonreactive(() => Tracker.autorun(() => {
-      this.trackerHandler = tracker(this.props, _onData, { ..._defaults.env })
+      this.trackerHandler = tracker(this.props, this._onData, { ..._defaults.env })
     }))
   },
 
@@ -42,9 +59,9 @@ const trackReactiveSource = (tracker, options) => lifecycle({
   },
 })
 
-const checkState = ({ _withTrackerState: { state } }) => typeof state === 'boolean' ? !state : true
+const checkState = ({ _withTrackerState: state }) => typeof state === 'boolean' ? !state : true
 
-const StateComponent = options => ({ _withTrackerState: { state }, ...props }) => {
+const StateComponent = options => ({ _withTrackerState: state, ...props }) => {
   if (typeof state === 'boolean')
     return options.loadingHandler && options.loadingHandler(props) || _defaults.loadingHandler()
 

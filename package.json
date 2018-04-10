@@ -10,6 +10,7 @@
     "lodash": "^4.17.5",
     "meteor-node-stubs": "^0.3.2",
     "react": "^16.3.1",
+    "react-addons-shallow-compare": "^15.6.2",
     "react-dom": "^16.3.1",
     "recompact": "^3.3.0"
   }
