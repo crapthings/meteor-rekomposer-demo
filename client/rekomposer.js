@@ -6,8 +6,6 @@ const {
   withState,
   lifecycle,
   branch,
-  createEagerFactory,
-  renderNothing
 } = recompact
 
 const LoadingComponent = () => <div>loading</div>
@@ -39,12 +37,12 @@ const branchTrackerState = options => branch(checkState, () => ({ _withTrackerSt
   return options.errorHandler ? options.errorHandler(state, props) : ErrorComponent()
 })
 
-recompact.withTracker = (tracker, options = {}) => compose(
+const withTracker = (tracker, options = {}) => compose(
   initialState,
   trackReactiveSource(tracker, options),
   branchTrackerState(options),
 )
 
-recompact.composeWithTracker = recompact.withTracker
+recompact.composeWithTracker = recompact.withTracker = withTracker
 
 export default recompact
