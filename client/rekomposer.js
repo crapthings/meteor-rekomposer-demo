@@ -1,6 +1,5 @@
 import React from 'react'
-import shallowCompare from 'react-addons-shallow-compare'
-import { isEqual } from 'lodash'
+import { isEqual, omit } from 'lodash'
 import recompact from 'recompact'
 
 const {
@@ -25,6 +24,8 @@ let _defaults = {
 
 export const setDefaults = defaults => Object.assign({}, _defaults, defaults)
 
+//
+
 const initialState = withState(WITH_STATE_PROPS[0], WITH_STATE_PROPS[1], false)
 
 const trackReactiveSource = (tracker, options) => lifecycle({
@@ -32,12 +33,18 @@ const trackReactiveSource = (tracker, options) => lifecycle({
   },
 
   componentWillReceiveProps(nextProps) {
-    if (isEqual(_.omit(this.props, WITH_STATE_PROPS), _.omit(nextProps, WITH_STATE_PROPS))) return
+    if (isEqual(omit(this.props, WITH_STATE_PROPS), omit(nextProps, WITH_STATE_PROPS))) return
     this.trackerHandler = tracker(this.props, this._onData, { ..._defaults.env })
   },
 
   shouldComponentUpdate(nextProps, nextState) {
-    return true
+    if (options.shouldUpdate)
+      return options.shouldUpdate(this.props, nextProps, this.state, nextState)
+
+    if (!_defaults.pure)
+      return true
+
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState)
   },
 
   componentDidMount() {
@@ -69,6 +76,8 @@ const StateComponent = options => ({ _withTrackerState: state, ...props }) => {
 }
 
 const branchTrackerState = options => branch(checkState, renderComponent(StateComponent(options)))
+
+//
 
 const withTracker = (tracker, options = {}) => compose(
   initialState,
