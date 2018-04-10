@@ -31,7 +31,7 @@ const trackReactiveSource = (tracker, options) => lifecycle({
 const checkState = ({ _withTrackerState: { state } }) => typeof state === 'boolean' ? !state : true
 
 const branchTrackerState = options => branch(checkState, () => ({ _withTrackerState: { state }, ...props }) => {
-  if (state === true)
+  if (typeof state === 'boolean')
     return options.loadingHandler && options.loadingHandler(props) || LoadingComponent()
 
   return options.errorHandler ? options.errorHandler(state, props) : ErrorComponent()
