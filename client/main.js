@@ -2,7 +2,8 @@ import _ from 'lodash'
 import faker from 'faker'
 import React, { Component } from 'react'
 import { render } from 'react-dom'
-import recompact from '../'
+// import recompact from '../index.js'
+import recompact from '@crapthings/meteor-rekomposer'
 
 const {
   compose,

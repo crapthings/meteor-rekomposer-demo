@@ -1,24 +1,9 @@
 {
-  "name": "@crapthings/meteor-rekomposer",
-  "version": "0.0.1",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "dev": "meteor"
-  },
-  "peerDependencies": {
-    "react": "^15.0.0 || ^16.0.0"
-  },
   "dependencies": {
-    "lodash.isequal": "^4.5.0",
-    "lodash.omit": "^4.5.0",
-    "recompact": "^3.3.0"
-  },
-  "devDependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
+    "@crapthings/meteor-rekomposer": "0.0.1",
     "faker": "^4.1.0",
     "lodash": "^4.17.5",
-    "lodash.isempty": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.omit": "^4.5.0",
     "meteor-node-stubs": "^0.3.2",
