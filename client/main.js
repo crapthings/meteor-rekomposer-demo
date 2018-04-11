@@ -42,3 +42,11 @@ FlowRouter.route('/page4', {
     })
   }
 })
+
+// Meteor.startup(() => {
+//   Meteor.setTimeout(() => {
+//     Meteor.setInterval(() => {
+//       Meteor.call('addTest')
+//     }, 1000)
+//   }, 3000)
+// })

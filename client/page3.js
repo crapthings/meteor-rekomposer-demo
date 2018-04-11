@@ -1,4 +1,5 @@
 const track3 = (props, onData, env) => {
+  TestRerun1.get()
   const sub = Meteor.subscribe('test1')
   if (sub.ready()) {
     const list = Test.find().fetch()
@@ -6,10 +7,10 @@ const track3 = (props, onData, env) => {
     onData(null, { list })
   }
 
-  return () => {
-    sub.stop()
-    console.log('stop page3 tracker')
-  }
+  // return () => {
+  //   sub.stop()
+  //   console.log('stop page3 tracker')
+  // }
 }
 
 const test3 = rk.composeWithTracker(track3)(({ list }) => {
